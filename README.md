@@ -221,3 +221,15 @@ O deploy de produção e essa configuração de banco ainda precisam ser validad
 ## Status
 
 Aplicação funcional e testada localmente, em evolução.
+
+## Origem e contribuições
+
+Este projeto foi desenvolvido a partir de uma base de código
+compartilhada por Henrique Algauer para utilização em portfólio.
+
+A versão atual foi revisada e aprimorada com foco em autenticação,
+validação de dados, segurança das rotas, correção de erros,
+experiência do usuário e organização do código.
+
+Repositório de referência:
+https://github.com/HenriqueAlgauer/front-node-notes
