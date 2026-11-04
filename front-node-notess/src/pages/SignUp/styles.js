@@ -1,5 +1,5 @@
+
 import styled from "styled-components";
-import backgroundImg from "../../assets/background.png";
 
 export const Container = styled.div`
   height: 100vh;
@@ -42,6 +42,23 @@ export const Form = styled.form`
 
 export const Background = styled.div`
   flex: 1;
-  background: url(${backgroundImg}) no-repeat center center;
-  background-size: cover;
+  min-width: 0;
+
+  background:
+    radial-gradient(
+      circle at 72% 28%,
+      rgba(255, 144, 0, 0.22),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 25% 78%,
+      rgba(255, 144, 0, 0.10),
+      transparent 40%
+    ),
+    linear-gradient(
+      145deg,
+      #232129 0%,
+      #312e38 55%,
+      #1b1921 100%
+    );
 `;

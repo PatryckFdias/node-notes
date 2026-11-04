@@ -55,7 +55,7 @@ export function Home() {
   return (
     <Container>
       <Brand>
-        <h1>Henrique Algauer</h1>
+        <h1>Patryck Fragoso</h1>
       </Brand>
 
       <Header />

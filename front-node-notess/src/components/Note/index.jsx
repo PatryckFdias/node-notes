@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Container } from "./styles";
 
-import { Tag } from ".Tag";
+import { Tag } from "../Tag/index.jsx";
 
 export function Note({ data, ...rest }) {
   return (

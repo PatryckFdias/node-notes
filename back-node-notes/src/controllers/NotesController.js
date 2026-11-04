@@ -1,3 +1,4 @@
+
 const knex = require("../database/knex");
 
 class NotesController {
@@ -35,19 +36,39 @@ class NotesController {
 
       await trx.commit();
 
-      response.status(201).json({ message: "Deu certo :)" });
+      return response.status(201).json({
+        message: "Deu certo :)",
+      });
     } catch (error) {
       await trx.rollback();
-      console.error("Error creating note:", error); // Log do erro
-      response.status(500).json({ error: "Error creating note" });
+
+      console.error("Error creating note:", error);
+
+      return response.status(500).json({
+        error: "Error creating note",
+      });
     }
   }
 
   async show(request, response) {
     const { id } = request.params;
+    const user_id = request.user.id;
 
-    const note = await knex("notes").where({ id }).first();
-    const tags = await knex("tags").where({ note_id: id }).orderBy("name");
+    // Busca a nota apenas se pertencer ao usuario autenticado
+    const note = await knex("notes")
+      .where({ id, user_id })
+      .first();
+
+    if (!note) {
+      return response.status(404).json({
+        message: "Nota não encontrada",
+      });
+    }
+
+    const tags = await knex("tags")
+      .where({ note_id: id })
+      .orderBy("name");
+
     const links = await knex("links")
       .where({ note_id: id })
       .orderBy("created_at");
@@ -61,8 +82,18 @@ class NotesController {
 
   async delete(request, response) {
     const { id } = request.params;
+    const user_id = request.user.id;
 
-    await knex("notes").where({ id }).delete();
+    // Exclui somente notas pertencentes ao usuario autenticado
+    const deletedRows = await knex("notes")
+      .where({ id, user_id })
+      .delete();
+
+    if (deletedRows === 0) {
+      return response.status(404).json({
+        message: "Nota não encontrada",
+      });
+    }
 
     return response.json();
   }
@@ -74,7 +105,9 @@ class NotesController {
     let notes;
 
     if (tags) {
-      const filterTags = tags.split(",").map((tag) => tag.trim());
+      const filterTags = tags
+        .split(",")
+        .map((tag) => tag.trim());
 
       notes = await knex("tags")
         .select(["notes.id", "notes.title", "notes.user_id"])
@@ -92,14 +125,18 @@ class NotesController {
     }
 
     const userTags = await knex("tags").where({ user_id });
+
     const notesWithTags = notes.map((note) => {
-      const noteTags = userTags.filter((tag) => tag.note_id === note.id);
+      const noteTags = userTags.filter(
+        (tag) => tag.note_id === note.id
+      );
 
       return {
         ...note,
         tags: noteTags,
       };
     });
+
     return response.json(notesWithTags);
   }
 }

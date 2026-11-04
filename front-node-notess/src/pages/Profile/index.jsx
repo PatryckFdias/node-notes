@@ -6,7 +6,7 @@ import { Container, Form, Avatar } from "./styles";
 import { useAuth } from "../../hooks/auth";
 import { api } from "../../services/api";
 
-import avatarPlaceholder from "../../assets/usericon.png";
+import avatarPlaceholder from "../../assets/avatar-default.svg";
 
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";

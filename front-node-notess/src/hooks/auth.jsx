@@ -1,27 +1,37 @@
+
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
-import { createContext, useContext } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
 import { api } from "../services/api";
 
 const AuthContext = createContext({});
 
 function AuthProvider({ children }) {
   const [data, setData] = useState({});
+
   async function signIn({ email, password }) {
     try {
-      const response = await api.post("/sessions", { email, password });
+      const response = await api.post("/sessions", {
+        email,
+        password,
+      });
+
       const { user, token } = response.data;
 
       localStorage.setItem("@user", JSON.stringify(user));
       localStorage.setItem("@token", token);
 
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
       setData({ user, token });
     } catch (error) {
       if (error.response) {
-        alert(error.response);
+        const message =
+          error.response.data?.message ||
+          `Erro ao entrar (HTTP ${error.response.status})`;
+
+        alert(message);
       } else {
-        alert("Não foi possível entrar");
+        alert("Não foi possível conectar à API. Verifique o servidor.");
       }
     }
   }
@@ -29,6 +39,8 @@ function AuthProvider({ children }) {
   function signOut() {
     localStorage.removeItem("@user");
     localStorage.removeItem("@token");
+
+    delete api.defaults.headers.common["Authorization"];
 
     setData({});
   }
@@ -39,29 +51,40 @@ function AuthProvider({ children }) {
         const fileUploadForm = new FormData();
         fileUploadForm.append("avatar", avatarFile);
 
-        const response = await api.patch("/users/avatar", fileUploadForm);
+        const response = await api.patch(
+          "/users/avatar",
+          fileUploadForm
+        );
+
         user.avatar = response.data.avatar;
       }
 
       await api.put("/users", user);
+
       localStorage.setItem("@user", JSON.stringify(user));
 
       setData({ user, token: data.token });
+
       alert("Perfil atualizado");
     } catch (error) {
       if (error.response) {
-        alert(error.response.data.message);
+        alert(
+          error.response.data?.message ||
+          `Erro ao atualizar perfil (HTTP ${error.response.status})`
+        );
       } else {
-        alert("Não foi possível atualizar o perfil");
+        alert("Não foi possível atualizar o perfil.");
       }
     }
   }
+
   useEffect(() => {
     const user = localStorage.getItem("@user");
     const token = localStorage.getItem("@token");
 
     if (token && user) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
       setData({
         token,
         user: JSON.parse(user),
@@ -71,7 +94,12 @@ function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ signIn, user: data.user, signOut, updateProfile }}
+      value={{
+        signIn,
+        user: data.user,
+        signOut,
+        updateProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -83,5 +111,6 @@ function useAuth() {
 
   return context;
 }
+
 // eslint-disable-next-line react-refresh/only-export-components
 export { AuthProvider, useAuth };

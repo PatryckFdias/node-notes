@@ -1,2 +1,16 @@
 /node_modules
 .env
+# Arquivos de ambiente
+.env*
+!.env.example
+
+# Banco de dados local
+src/database/*.db*
+src/database/*.sqlite*
+
+# Uploads e arquivos temporarios
+tmp/
+
+# Logs
+*.log
+logs/

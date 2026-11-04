@@ -25,8 +25,15 @@ class SessionsController {
       subject: String(user.id),
       expiresIn,
     });
-    return response.json({ user, token });
-  }
+    const safeUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+    };
+
+    return response.json({ user: safeUser, token });
+ }
 }
 
 module.exports = SessionsController;
